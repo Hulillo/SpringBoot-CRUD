@@ -1,6 +1,6 @@
 package org.example.springboot_crud.controlador;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -12,6 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.io.FileReader;
 
 @Controller
 public class FormsController {
@@ -28,32 +30,35 @@ public class FormsController {
         MongoDatabase database;
         MongoCollection<Document> collection;
         Document filtro, usuario;
-        Gson gson = new Gson();
-
         mongoClient = MongoClients.create(USER_MONGO_CONNECT);
         database = mongoClient.getDatabase(DATABASE_NAME);
         collection = database.getCollection(COLLECTION_NAME);
+        String datos = null;
+        String usuarioMongo, contrasenaMongo;
+
 
         try {
             collection = database.getCollection(COLLECTION_NAME);
-            filtro = new Document("nombre", nombre);
-            usuario = collection.find(filtro).first();
+            filtro = new Document("usuario", nombre);
+            usuario =collection.find(filtro).first();
+            JsonParser jsonParser = new JsonParser();
+            JsonObject jsonObject = (JsonObject) jsonParser.parse(usuario.toJson());
 
 
+            usuarioMongo = jsonObject.get("usuario").getAsString();
+            contrasenaMongo = jsonObject.get("password").getAsString();
 
-
-            gson.toJson();
-            model.addAttribute("nombre", nombre);
-            model.addAttribute("password", password);
-            return "usuario";
-
+            if(usuarioMongo.equals(nombre) && contrasenaMongo.equals(password)){
+                model.addAttribute("nombre", usuarioMongo);
+                model.addAttribute("password", contrasenaMongo);
+                datos = "usuario";
+            }
         } catch (MongoException e) {
             System.err.println("Error al obtener usuario: " + e.getMessage());
         } catch (NullPointerException e) {
             System.err.println("No existe dicho usuario.");
         }
-        // Aquí puedes realizar alguna lógica con los datos del formulario
-        ;
+        return datos;
     }
 
 
