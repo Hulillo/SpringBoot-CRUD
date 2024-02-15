@@ -38,9 +38,8 @@ public class FormsController {
 
 
         try {
-            collection = database.getCollection(COLLECTION_NAME);
             filtro = new Document("usuario", nombre);
-            usuario =collection.find(filtro).first();
+            usuario = collection.find(filtro).first();
             JsonParser jsonParser = new JsonParser();
             JsonObject jsonObject = (JsonObject) jsonParser.parse(usuario.toJson());
 
