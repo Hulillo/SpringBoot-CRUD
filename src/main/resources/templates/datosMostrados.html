@@ -2,9 +2,77 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos Libros</title>
+    <!-- Agrega la referencia al CSS de Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+        }
+        .container {
+            padding-top: 50px;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <h1>Lista de Libros</h1>
+    <div class="form-group">
+        <label for="selectLibros" class="form-label">Selecciona un libro:</label>
+        <select class="form-select" id="selectLibros">
+            <!-- Opciones de libros se cargarán aquí -->
+        </select>
+    </div>
+    <div id="infoLibro">
+        <h2>Detalles del libro</h2>
+        <p><strong>Nombre del Libro:</strong> <span id="nombreLibro"></span></p>
+        <p><strong>Autor:</strong> <span id="autorLibro"></span></p>
+        <p><strong>Sinopsis:</strong> <span id="sinopsisLibro"></span></p>
+    </div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Supongamos que los datos de los libros se obtienen de MongoDB y se pasan al frontend
+
+    // Datos de ejemplo para simular la carga de libros
+    var libros = [
+        { nombre: "El nombre del viento", autor: "Patrick Rothfuss", sinopsis: "Sinopsis del libro El nombre del viento." },
+        { nombre: "Cien años de soledad", autor: "Gabriel García Márquez", sinopsis: "Sinopsis del libro Cien años de soledad." },
+        { nombre: "1984", autor: "George Orwell", sinopsis: "Sinopsis del libro 1984." }
+    ];
+
+    // Función para cargar los libros en el desplegable
+    function cargarLibros() {
+        var selectLibros = document.getElementById('selectLibros');
+        libros.forEach(function(libro) {
+            var option = document.createElement('option');
+            option.text = libro.nombre;
+            option.value = JSON.stringify(libro);
+            selectLibros.appendChild(option);
+        });
+    }
+
+    // Función para mostrar los detalles del libro seleccionado
+    function mostrarDetallesLibro() {
+        var selectLibros = document.getElementById('selectLibros');
+        var selectedLibro = JSON.parse(selectLibros.value);
+
+        document.getElementById('nombreLibro').innerText = selectedLibro.nombre;
+        document.getElementById('autorLibro').innerText = selectedLibro.autor;
+        document.getElementById('sinopsisLibro').innerText = selectedLibro.sinopsis;
+    }
+
+    // Cargar los libros al cargar la página
+    window.onload = function() {
+        cargarLibros();
+        mostrarDetallesLibro(); // Mostrar detalles del primer libro por defecto
+    };
+
+    // Escuchar cambios en el desplegable de libros
+    document.getElementById('selectLibros').addEventListener('change', mostrarDetallesLibro);
+</script>
 </body>
 </html>
