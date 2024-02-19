@@ -5,8 +5,27 @@
     <title>Title</title>
 </head>
 <body>
-    <h1>Resultado del Formulario</h1>
-    <p>Nombre: <span th:text="${nombre}"></span></p>
-    <p>Password: <span th:text="${password}"></span></p>
+<h1>Resultado del Formulario</h1>
+<p>Nombre: <span th:text="${nombre}"></span></p>
+<p>Password: <span th:text="${password}"></span></p>
+<p>Email: <span th:text="${email}"></span></p>
+<table>
+    <thead>
+    <tr>
+        <th>Título</th>
+        <th>Autor</th>
+        <th>Sinopsis</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Utiliza 'libro' en lugar de 'book' en el bucle th:each -->
+    <tr th:each="libro : ${libros}">
+        <!-- Accede a los atributos del objeto 'libro' -->
+        <td th:text="${libro.titulo}"></td>
+        <td th:text="${libro.autor}"></td>
+        <td th:text="${libro.sinopsis}"></td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>
