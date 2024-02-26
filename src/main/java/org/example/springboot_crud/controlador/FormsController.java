@@ -33,28 +33,23 @@ public class FormsController {
         return "login";
     }
 
-
-
-
+  
     @PostMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable("id") String id, @RequestParam String nombre) {
+    public String eliminar(@PathVariable("id") String id, @RequestParam String nombre,@RequestParam String password, Model model) {
         try {
             Conexion conexion = new Conexion();
             Document usuario = conexion.getCollection().find(Filters.eq("usuario", nombre)).first();
 
             if (usuario != null) {
-                // Obtener la lista de libros del usuario
                 List<Document> libros = usuario.getList("libros", Document.class);
                 List<Document> librosNuevos = new ArrayList<>();
 
-                // Eliminar el libro con el ID especificado
                 for (Document libro : libros) {
                     if (!libro.getString("id").equals(id)) {
                         librosNuevos.add(libro);
                     }
                 }
 
-                // Actualizar el documento del usuario con la lista de libros modificada
                 UpdateResult result = conexion.getCollection().updateOne(
                         Filters.eq("usuario", nombre),
                         Updates.set("libros", librosNuevos)
@@ -62,6 +57,7 @@ public class FormsController {
 
                 if (result.getModifiedCount() > 0) {
                     System.out.println("Libro eliminado con éxito");
+                    return procesarFormulario(nombre, password, model);
                 } else {
                     System.out.println("No se pudo eliminar el libro");
                 }
@@ -72,7 +68,7 @@ public class FormsController {
             System.err.println("Error al eliminar el libro: " + e.getMessage());
         }
 
-        return "redirect:/submit-formulario";
+        return "redirect:/usuario";
     }
 
     @PostMapping("/submit-formulario")
@@ -97,7 +93,6 @@ public class FormsController {
             emailMongo = jsonObject.get("email").getAsString();
             JsonArray librosJson = jsonObject.getAsJsonArray("libros");
             System.out.println(librosJson);
-            DeleteResult result;
 
 
             for (JsonElement libroJson : librosJson) {
@@ -114,8 +109,6 @@ public class FormsController {
                 model.addAttribute("email", emailMongo);
                 model.addAttribute("libros", libros);
                 datos = "usuario";
-
-
             }
 
 

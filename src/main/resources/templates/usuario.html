@@ -68,6 +68,7 @@
                 <td>
                     <form th:action="@{/eliminar/{id}(id=${libro.id})}" method="post">
                         <input type="hidden" name="nombre" th:value="${nombre}" />
+                        <input type="hidden" name="password" th:value="${password}" />
                         <button type="submit">Eliminar</button>
                     </form>
                 </td>
