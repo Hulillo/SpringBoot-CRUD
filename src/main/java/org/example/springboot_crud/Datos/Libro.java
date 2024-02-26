@@ -1,13 +1,21 @@
 package org.example.springboot_crud.Datos;
 
 public class Libro {
+    private String id,titulo, autor, sinopsis;
 
-    private String titulo, autor, sinopsis;
-
-    public Libro(String titulo, String autor, String sinopsis) {
+    public Libro(String id, String titulo, String autor, String sinopsis) {
+        this.id = id;
         this.titulo = titulo;
         this.autor = autor;
         this.sinopsis = sinopsis;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitulo() {
@@ -33,4 +41,5 @@ public class Libro {
     public void setSinopsis(String sinopsis) {
         this.sinopsis = sinopsis;
     }
+
 }
