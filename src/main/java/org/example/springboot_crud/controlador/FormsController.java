@@ -33,7 +33,49 @@ public class FormsController {
         return "login";
     }
 
-  
+    @PostMapping("/editar/{id}")
+    public String editar(@PathVariable("id") String id, @RequestParam String nombre, @RequestParam String password, Model model) {
+        try {
+            Conexion conexion = new Conexion();
+            Document usuario = conexion.getCollection().find(Filters.eq("usuario", nombre)).first();
+
+            if (usuario != null) {
+                List<Document> libros = usuario.getList("libros", Document.class);
+
+                Document libroEditar = null;
+                for (Document libro : libros) {
+                    if (libro.getString("id").equals(id)) {
+                        libroEditar = libro;
+                        break;
+                    }
+                }
+
+                if (libroEditar != null) {
+                    String titulo = libroEditar.getString("titulo");
+                    String autor = libroEditar.getString("autor");
+                    String sinopsis = libroEditar.getString("sinopsis");
+
+
+                    model.addAttribute("titulo", titulo);
+                    model.addAttribute("autor", autor);
+                    model.addAttribute("sinopsis", sinopsis);
+
+                    // Devolver la vista del formulario de edición
+                    return "editar";
+                } else {
+                    System.out.println("Libro no encontrado");
+                }
+            } else {
+                System.out.println("Usuario no encontrado");
+            }
+        } catch (MongoException e) {
+            System.err.println("Error al editar el libro: " + e.getMessage());
+        }
+
+        return "redirect:/usuario";
+    }
+
+
     @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable("id") String id, @RequestParam String nombre,@RequestParam String password, Model model) {
         try {
