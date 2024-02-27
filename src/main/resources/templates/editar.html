@@ -54,9 +54,9 @@
 </head>
 <body>
 <form action="/editar-libro" method="post">
-    <input name="idEdit" th:value="${idEdit}">
-    <input name="nombreEdit" id="nombreEdit" th:value="${nombreEdit}"/>
-    <input name="passwordEdit" id="passwordEdit" th:value="${passwordEdit}"/>
+    <input type="hidden" name="idEdit" th:value="${idEdit}">
+    <input type="hidden" name="nombreEdit" id="nombreEdit" th:value="${nombreEdit}"/>
+    <input type="hidden" name="passwordEdit" id="passwordEdit" th:value="${passwordEdit}"/>
     <label for="titulo">Título:</label>
     <input type="text" name="titulo" id="titulo" th:value="${titulo}">
     <br>

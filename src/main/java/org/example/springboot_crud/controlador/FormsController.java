@@ -36,59 +36,17 @@ public class FormsController {
     public String mostrarLogin() {
         return "login";
     }
-
-    @PostMapping("/editar/{id}")
-    public String editar(@PathVariable("id") String id, @RequestParam String nombre, @RequestParam String password, Model model) {
-        try {
-            Conexion conexion = new Conexion();
-            Document usuario = conexion.getCollection().find(Filters.eq("usuario", nombre)).first();
-
-            if (usuario != null) {
-                List<Document> libros = usuario.getList("libros", Document.class);
-                Document libroEditar = null;
-                Document libro;
-
-                int i = 0;
-                while (i < libros.size() && libroEditar == null) {
-                    libro = libros.get(i);
-                    if (libro.getString("id").equals(id)) {
-                        libroEditar = libro;
-                    }
-                    i++;
-                }
-
-                if (libroEditar != null) {
-                    String titulo = libroEditar.getString("titulo");
-                    String autor = libroEditar.getString("autor");
-                    String sinopsis = libroEditar.getString("sinopsis");
-
-                    model.addAttribute("titulo", titulo);
-                    model.addAttribute("autor", autor);
-                    model.addAttribute("sinopsis", sinopsis);
-
-                    return "editar";
-                } else {
-                    System.out.println("Libro no encontrado");
-                }
-            } else {
-                System.out.println("Usuario no encontrado");
-            }
-        } catch (MongoException e) {
-            System.err.println("Error al editar el libro: " + e.getMessage());
-        }
-
-        return "redirect:/usuario";
-    }
-
     @PostMapping("/editar-libro")
     public String editarLibro(@RequestParam("idEdit") String idEdit, @RequestParam String titulo, @RequestParam String autor, @RequestParam String sinopsis, @RequestParam String nombreEdit, @RequestParam String passwordEdit, Model model){
         try {
             Conexion conexion = new Conexion();
             Document usuario = conexion.getCollection().find(Filters.eq("usuario", nombreEdit)).first();
+            UpdateResult result;
+            List<Document> libros, librosNuevos;
 
             if (usuario != null) {
-                List<Document> libros = usuario.getList("libros", Document.class);
-                List<Document> librosNuevos = new ArrayList<>();
+                libros = usuario.getList("libros", Document.class);
+                librosNuevos = new ArrayList<>();
 
                 for (Document libro : libros) {
                     if (libro.getString("id").equals(idEdit)) {
@@ -99,7 +57,7 @@ public class FormsController {
                     librosNuevos.add(libro);
                 }
 
-                UpdateResult result = conexion.getCollection().updateOne(
+                result = conexion.getCollection().updateOne(
                         Filters.eq("usuario", nombreEdit),
                         Updates.set("libros", librosNuevos)
                 );
@@ -128,10 +86,12 @@ public class FormsController {
         try {
             Conexion conexion = new Conexion();
             Document usuario = conexion.getCollection().find(Filters.eq("usuario", nombre)).first();
+            List<Document> libros, librosNuevos;
+            UpdateResult result;
 
             if (usuario != null) {
-                List<Document> libros = usuario.getList("libros", Document.class);
-                List<Document> librosNuevos = new ArrayList<>();
+                libros = usuario.getList("libros", Document.class);
+                librosNuevos = new ArrayList<>();
 
                 for (Document libro : libros) {
                     if (!libro.getString("id").equals(id)) {
@@ -139,7 +99,7 @@ public class FormsController {
                     }
                 }
 
-                UpdateResult result = conexion.getCollection().updateOne(
+                result = conexion.getCollection().updateOne(
                         Filters.eq("usuario", nombre),
                         Updates.set("libros", librosNuevos)
                 );
@@ -170,7 +130,6 @@ public class FormsController {
 
     @PostMapping("/editarMostrar")
     public String mostrarEditar(@RequestParam String idEdit, @RequestParam String nombreEdit, @RequestParam String passwordEdit, Model model) {
-
         model.addAttribute("idEdit", idEdit);
         model.addAttribute("nombreEdit", nombreEdit);
         model.addAttribute("passwordEdit", passwordEdit);
@@ -178,11 +137,14 @@ public class FormsController {
         try {
             Conexion conexion = new Conexion();
             Document usuario = conexion.getCollection().find(Filters.eq("usuario", nombreEdit)).first();
+            Document libroEditar = null;
+            Document libro;
+            List<Document> libros;
+            String titulo, autor, sinopsis;
+
 
             if (usuario != null) {
-                List<Document> libros = usuario.getList("libros", Document.class);
-                Document libroEditar = null;
-                Document libro;
+                libros = usuario.getList("libros", Document.class);
 
                 int i = 0;
                 while (i < libros.size() && libroEditar == null) {
@@ -194,9 +156,9 @@ public class FormsController {
                 }
 
                 if (libroEditar != null) {
-                    String titulo = libroEditar.getString("titulo");
-                    String autor = libroEditar.getString("autor");
-                    String sinopsis = libroEditar.getString("sinopsis");
+                    titulo = libroEditar.getString("titulo");
+                    autor = libroEditar.getString("autor");
+                    sinopsis = libroEditar.getString("sinopsis");
 
                     model.addAttribute("titulo", titulo);
                     model.addAttribute("autor", autor);
@@ -272,12 +234,16 @@ public class FormsController {
                                 @RequestParam("autor") String autor,
                                 @RequestParam("sinopsis") String sinopsis) {
 
-        Conexion conexion = new Conexion();
+        try {
+            Conexion conexion = new Conexion();
 
-        Operaciones.insertarLibro(conexion.getDatabase(), nombre, titulo, autor, sinopsis);
+            Operaciones.insertarLibro(conexion.getDatabase(), nombre, titulo, autor, sinopsis);
 
-        model.addAttribute("nombre", nombre);
-        model.addAttribute("password", password);
+            model.addAttribute("nombre", nombre);
+            model.addAttribute("password", password);
+        }catch (MongoException e){
+            System.err.println("Error con la conexion");
+        }
 
         return procesarFormulario(nombre, password, model);
     }

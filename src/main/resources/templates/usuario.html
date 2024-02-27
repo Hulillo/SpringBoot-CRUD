@@ -124,17 +124,11 @@
                 <td th:text="${libro.autor}"></td>
                 <td th:text="${libro.sinopsis}"></td>
                 <td>
-                    <form th:action="@{/editar/{id}(id=${libro.id})}" method="post">
-                        <input type="hidden" name="nombre" th:value="${nombre}" />
-                        <input type="hidden" name="password" th:value="${password}" />
-                        <button class="editar" type="submit">Editar</button>
-                    </form>
-
                     <form action="/editarMostrar" method="POST">
                         <input type="hidden" id="idEdit" name="idEdit" th:value="${libro.id}">
                         <input type="hidden" id="nombreEdit" name="nombreEdit" th:value="${nombre}">
                         <input type="hidden" id="passwordEdit" name="passwordEdit" th:value="${password}">
-                        <button class="editar" type="submit">Editar2</button>
+                        <button class="editar" type="submit">Editar</button>
                     </form>
 
                     <form th:action="@{/eliminar/{id}(id=${libro.id})}" method="post">
