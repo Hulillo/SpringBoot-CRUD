@@ -68,7 +68,29 @@
         input[type="submit"]:hover {
             background-color: #45a049;
         }
+        .eliminar{
+            color: white;
+            width: 100px;
+            background: #bb6262;
+            border-color: #aa2d55;
+            margin-top: 10px;
+            padding-top: 2%;
+        }
+        .editar{
+            color: white;
+            width: 100px;
+            background: #3ea15e;
+            border-color: #c8ffca;
+            margin-top: 10px;
+            padding-top: 2%;
+        }
+        .editar:hover{
+            background: #0d5e09;
+        }
 
+        .eliminar:hover{
+            background: #720f0f;
+        }
     </style>
 </head>
 <body>
@@ -87,19 +109,33 @@
     <table>
         <thead>
         <tr>
+            <th>Id</th>
             <th>Título</th>
             <th>Autor</th>
             <th>Sinopsis</th>
+            <th>Opciones</th>
         </tr>
         </thead>
         <tbody>
-        <!-- Utiliza 'libro' en lugar de 'book' en el bucle th:each -->
-        <tr th:each="libro : ${libros}">
-            <!-- Accede a los atributos del objeto 'libro' -->
-            <td th:text="${libro.titulo}"></td>
-            <td th:text="${libro.autor}"></td>
-            <td th:text="${libro.sinopsis}"></td>
-        </tr>
+            <tr th:each="libro : ${libros}">
+                <input type="hidden" name="libroId" th:value="${libro.id}"/>
+                <td th:text="${libro.id}"></td>
+                <td th:text="${libro.titulo}"></td>
+                <td th:text="${libro.autor}"></td>
+                <td th:text="${libro.sinopsis}"></td>
+                <td>
+                    <form th:action="@{/editar/{id}(id=${libro.id})}" method="post">
+                        <input type="hidden" name="nombre" th:value="${nombre}" />
+                        <input type="hidden" name="password" th:value="${password}" />
+                        <button class="editar" type="submit">Editar</button>
+                    </form>
+                    <form th:action="@{/eliminar/{id}(id=${libro.id})}" method="post">
+                        <input type="hidden" name="nombre" th:value="${nombre}" />
+                        <input type="hidden" name="password" th:value="${password}" />
+                        <button class="eliminar" type="submit">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
         </tbody>
     </table>
 
