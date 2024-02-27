@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -54,7 +54,9 @@
 </head>
 <body>
 <form action="/editar-libro" method="post">
-    <input type="hidden" name="id" value="${id}">
+    <input type="hidden" name="id" th:value="${id}">
+    <input type="hidden" name="nombre" id="nombre" th:value="${nombre}"/>
+    <input type="hidden" name="password" id="password" th:value="${password}"/>
     <label for="titulo">Título:</label>
     <input type="text" name="titulo" id="titulo" th:value="${titulo}">
     <br>

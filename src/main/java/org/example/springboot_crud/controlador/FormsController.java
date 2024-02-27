@@ -41,13 +41,16 @@ public class FormsController {
 
             if (usuario != null) {
                 List<Document> libros = usuario.getList("libros", Document.class);
-
                 Document libroEditar = null;
-                for (Document libro : libros) {
+                Document libro;
+
+                int i = 0;
+                while (i < libros.size() && libroEditar == null) {
+                    libro = libros.get(i);
                     if (libro.getString("id").equals(id)) {
                         libroEditar = libro;
-                        break;
                     }
+                    i++;
                 }
 
                 if (libroEditar != null) {
@@ -55,12 +58,10 @@ public class FormsController {
                     String autor = libroEditar.getString("autor");
                     String sinopsis = libroEditar.getString("sinopsis");
 
-
                     model.addAttribute("titulo", titulo);
                     model.addAttribute("autor", autor);
                     model.addAttribute("sinopsis", sinopsis);
 
-                    // Devolver la vista del formulario de edición
                     return "editar";
                 } else {
                     System.out.println("Libro no encontrado");
@@ -75,7 +76,48 @@ public class FormsController {
         return "redirect:/usuario";
     }
 
+    @PostMapping("/editar-libro")
+    public String editarLibro(@RequestParam("id") String id, @RequestParam String titulo, @RequestParam String autor, @RequestParam String sinopsis, @RequestParam String nombre, @RequestParam String password){
+        try {
+            Conexion conexion = new Conexion();
+            Document usuario = conexion.getCollection().find(Filters.eq("usuario", nombre)).first();
 
+            if (usuario != null) {
+                List<Document> libros = usuario.getList("libros", Document.class);
+                List<Document> librosNuevos = new ArrayList<>();
+
+                for (Document libro : libros) {
+                    if (libro.getString("id").equals(id)) {
+                        libro.put("titulo", titulo);
+                        libro.put("autor", autor);
+                        libro.put("sinopsis", sinopsis);
+                    }
+                    librosNuevos.add(libro);
+                }
+
+                UpdateResult result = conexion.getCollection().updateOne(
+                        Filters.eq("usuario", nombre),
+                        Updates.set("libros", librosNuevos)
+                );
+
+                if (result.getModifiedCount() > 0) {
+                    System.out.println("Libro editado con éxito");
+                } else {
+                    System.out.println("No se pudo editar el libro");
+                }
+            } else {
+                System.out.println("Usuario no encontrado");
+                System.out.println(nombre);
+                System.out.println(password);
+            }
+        } catch (MongoException e) {
+            System.err.println("Error al editar el libro: " + e.getMessage());
+        }
+
+
+
+        return "redirect:/usuario";
+    }
     @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable("id") String id, @RequestParam String nombre,@RequestParam String password, Model model) {
         try {
