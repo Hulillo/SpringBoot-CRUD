@@ -57,6 +57,8 @@
 <form action="/insertar-libro" method="post">
     <input type="hidden" id="nombre" name="nombre" th:value="${nombre}">
     <input type="hidden" id="password" name="password" th:value="${password}">
+    <label for="titulo">Id Libro:</label><br>
+    <input type="text" id="id" name="id"><br>
     <label for="titulo">Título:</label><br>
     <input type="text" id="titulo" name="titulo"><br>
     <label for="autor">Autor:</label><br>

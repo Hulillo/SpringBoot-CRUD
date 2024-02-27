@@ -230,6 +230,7 @@ public class FormsController {
     public String insertarLibro(@RequestParam("nombre") String nombre,
                                 @RequestParam("password") String password,
                                 Model model,
+                                @RequestParam("id") String id,
                                 @RequestParam("titulo") String titulo,
                                 @RequestParam("autor") String autor,
                                 @RequestParam("sinopsis") String sinopsis) {
@@ -237,7 +238,7 @@ public class FormsController {
         try {
             Conexion conexion = new Conexion();
 
-            Operaciones.insertarLibro(conexion.getDatabase(), nombre, titulo, autor, sinopsis);
+            Operaciones.insertarLibro(conexion.getDatabase(), nombre, id, titulo, autor, sinopsis);
 
             model.addAttribute("nombre", nombre);
             model.addAttribute("password", password);
