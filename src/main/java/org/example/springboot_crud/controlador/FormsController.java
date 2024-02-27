@@ -1,6 +1,9 @@
 package org.example.springboot_crud.controlador;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -15,6 +18,7 @@ import org.bson.types.ObjectId;
 import org.example.springboot_crud.Datos.Conexion;
 import org.example.springboot_crud.Datos.Libro;
 import org.springframework.boot.Banner;
+import org.example.springboot_crud.Datos.Operaciones;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -154,6 +158,15 @@ public class FormsController {
 
         return "redirect:/usuario";
     }
+    @PostMapping("/insertar")
+    public String mostrarInsertar(@RequestParam String nombre, @RequestParam String password, Model model) {
+
+        model.addAttribute("nombre", nombre);
+        model.addAttribute("password", password);
+
+        return "insertar";
+    }
+    
 
     @PostMapping("/submit-formulario")
     public String procesarFormulario(@RequestParam String nombre, @RequestParam String password, Model model) {
@@ -162,7 +175,6 @@ public class FormsController {
         String datos = null;
         String usuarioMongo, contrasenaMongo, emailMongo;
         List<Libro> libros = new ArrayList<>();
-
 
 
         try {
@@ -176,8 +188,6 @@ public class FormsController {
             contrasenaMongo = jsonObject.get("password").getAsString();
             emailMongo = jsonObject.get("email").getAsString();
             JsonArray librosJson = jsonObject.getAsJsonArray("libros");
-            System.out.println(librosJson);
-
 
             for (JsonElement libroJson : librosJson) {
                 libroObj = libroJson.getAsJsonObject();
@@ -203,6 +213,24 @@ public class FormsController {
             System.err.println("No existe dicho usuario.");
         }
         return datos;
+    }
+
+    @PostMapping("/insertar-libro")
+    public String insertarLibro(@RequestParam("nombre") String nombre,
+                                @RequestParam("password") String password,
+                                Model model,
+                                @RequestParam("titulo") String titulo,
+                                @RequestParam("autor") String autor,
+                                @RequestParam("sinopsis") String sinopsis) {
+
+        Conexion conexion = new Conexion();
+
+        Operaciones.insertarLibro(conexion.getDatabase(), nombre, titulo, autor, sinopsis);
+
+        model.addAttribute("nombre", nombre);
+        model.addAttribute("password", password);
+
+        return procesarFormulario(nombre, password, model);
     }
 
 

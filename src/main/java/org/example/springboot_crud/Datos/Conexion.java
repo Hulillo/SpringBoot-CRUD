@@ -9,7 +9,7 @@ import org.bson.Document;
 public class Conexion {
     private final String DATABASE_NAME = "usuarios";
     private final String USER_MONGO_CONNECT = "mongodb://localhost:27017";
-    private final String COLLECTION_NAME = "usuarios";
+    public static final String COLLECTION_NAME = "usuarios";
     private MongoClient mongoClient;
     private MongoDatabase database;
     private MongoCollection<Document> collection;
