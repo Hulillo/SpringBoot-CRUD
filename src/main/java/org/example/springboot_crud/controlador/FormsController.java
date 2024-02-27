@@ -81,17 +81,17 @@ public class FormsController {
     }
 
     @PostMapping("/editar-libro")
-    public String editarLibro(@RequestParam("id") String id, @RequestParam String titulo, @RequestParam String autor, @RequestParam String sinopsis, @RequestParam String nombre, @RequestParam String password){
+    public String editarLibro(@RequestParam("idEdit") String idEdit, @RequestParam String titulo, @RequestParam String autor, @RequestParam String sinopsis, @RequestParam String nombreEdit, @RequestParam String passwordEdit, Model model){
         try {
             Conexion conexion = new Conexion();
-            Document usuario = conexion.getCollection().find(Filters.eq("usuario", nombre)).first();
+            Document usuario = conexion.getCollection().find(Filters.eq("usuario", nombreEdit)).first();
 
             if (usuario != null) {
                 List<Document> libros = usuario.getList("libros", Document.class);
                 List<Document> librosNuevos = new ArrayList<>();
 
                 for (Document libro : libros) {
-                    if (libro.getString("id").equals(id)) {
+                    if (libro.getString("id").equals(idEdit)) {
                         libro.put("titulo", titulo);
                         libro.put("autor", autor);
                         libro.put("sinopsis", sinopsis);
@@ -100,7 +100,7 @@ public class FormsController {
                 }
 
                 UpdateResult result = conexion.getCollection().updateOne(
-                        Filters.eq("usuario", nombre),
+                        Filters.eq("usuario", nombreEdit),
                         Updates.set("libros", librosNuevos)
                 );
 
@@ -111,16 +111,17 @@ public class FormsController {
                 }
             } else {
                 System.out.println("Usuario no encontrado");
-                System.out.println(nombre);
-                System.out.println(password);
+                System.out.println(nombreEdit);
+                System.out.println(passwordEdit);
             }
         } catch (MongoException e) {
             System.err.println("Error al editar el libro: " + e.getMessage());
         }
 
+        model.addAttribute("nombre", nombreEdit);
+        model.addAttribute("password", passwordEdit);
 
-
-        return "redirect:/usuario";
+        return procesarFormulario(nombreEdit, passwordEdit, model);
     }
     @PostMapping("/eliminar/{id}")
     public String eliminar(@PathVariable("id") String id, @RequestParam String nombre,@RequestParam String password, Model model) {
@@ -165,6 +166,54 @@ public class FormsController {
         model.addAttribute("password", password);
 
         return "insertar";
+    }
+
+    @PostMapping("/editarMostrar")
+    public String mostrarEditar(@RequestParam String idEdit, @RequestParam String nombreEdit, @RequestParam String passwordEdit, Model model) {
+
+        model.addAttribute("idEdit", idEdit);
+        model.addAttribute("nombreEdit", nombreEdit);
+        model.addAttribute("passwordEdit", passwordEdit);
+
+        try {
+            Conexion conexion = new Conexion();
+            Document usuario = conexion.getCollection().find(Filters.eq("usuario", nombreEdit)).first();
+
+            if (usuario != null) {
+                List<Document> libros = usuario.getList("libros", Document.class);
+                Document libroEditar = null;
+                Document libro;
+
+                int i = 0;
+                while (i < libros.size() && libroEditar == null) {
+                    libro = libros.get(i);
+                    if (libro.getString("id").equals(idEdit)) {
+                        libroEditar = libro;
+                    }
+                    i++;
+                }
+
+                if (libroEditar != null) {
+                    String titulo = libroEditar.getString("titulo");
+                    String autor = libroEditar.getString("autor");
+                    String sinopsis = libroEditar.getString("sinopsis");
+
+                    model.addAttribute("titulo", titulo);
+                    model.addAttribute("autor", autor);
+                    model.addAttribute("sinopsis", sinopsis);
+
+                    return "editar";
+                } else {
+                    System.out.println("Libro no encontrado");
+                }
+            } else {
+                System.out.println("Usuario no encontrado");
+            }
+        } catch (MongoException e) {
+            System.err.println("Error al editar el libro: " + e.getMessage());
+        }
+
+        return "editar";
     }
     
 
